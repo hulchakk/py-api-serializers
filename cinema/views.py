@@ -1,3 +1,5 @@
+from multiprocessing.managers import BaseManager
+
 from rest_framework import viewsets
 
 from cinema.serializers import (
@@ -36,9 +38,9 @@ class CinemaHallViewSet(viewsets.ModelViewSet):
 
 
 class MovieViewSet(viewsets.ModelViewSet):
-    queryset = Movie.objects.all()
+    queryset = Movie.objects
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> MovieSerializer:
         if self.action == "list":
             return MovieListSerializer
         elif self.action == "retrieve":
@@ -46,17 +48,17 @@ class MovieViewSet(viewsets.ModelViewSet):
 
         return MovieSerializer
 
-    def get_queryset(self):
+    def get_queryset(self) -> BaseManager:
         if self.action in ("list", "retrieve"):
             return self.queryset.prefetch_related("genres", "actors")
 
-        return self.queryset
+        return self.queryset.all()
 
 
 class MovieSessionViewSet(viewsets.ModelViewSet):
-    queryset = MovieSession.objects.all()
+    queryset = MovieSession.objects
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> MovieSessionSerializer:
         if self.action == "list":
             return MovieSessionListSerializer
         elif self.action == "retrieve":
@@ -64,8 +66,8 @@ class MovieSessionViewSet(viewsets.ModelViewSet):
 
         return MovieSessionSerializer
 
-    def get_queryset(self):
+    def get_queryset(self) -> BaseManager:
         if self.action in ("list", "retrieve"):
             return self.queryset.select_related("movie", "cinema_hall")
 
-        return self.queryset
+        return self.queryset.all()
