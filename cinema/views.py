@@ -1,5 +1,4 @@
-from multiprocessing.managers import BaseManager
-
+from django.db.models.query import QuerySet
 from rest_framework import viewsets
 
 from cinema.serializers import (
@@ -48,7 +47,7 @@ class MovieViewSet(viewsets.ModelViewSet):
 
         return MovieSerializer
 
-    def get_queryset(self) -> BaseManager:
+    def get_queryset(self) -> QuerySet:
         if self.action in ("list", "retrieve"):
             return self.queryset.prefetch_related("genres", "actors")
 
@@ -66,7 +65,7 @@ class MovieSessionViewSet(viewsets.ModelViewSet):
 
         return MovieSessionSerializer
 
-    def get_queryset(self) -> BaseManager:
+    def get_queryset(self) -> QuerySet:
         if self.action in ("list", "retrieve"):
             return self.queryset.select_related("movie", "cinema_hall")
 
